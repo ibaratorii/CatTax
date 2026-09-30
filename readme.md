@@ -1,120 +1,135 @@
-# CatTax - 猫咪行为分析系统(YOLO11)
+# CatTax - 猫行動分析システム（YOLO11）
 
-基于计算机视觉的猫咪行为分析系统，可以实时检测和分析视频中猫咪的行为状态。
+コンピュータビジョンに基づく猫の行動分析システムで、動画内の猫の行動状態をリアルタイムで検出・分析できます。
 
-## 功能特点
+## 主な機能
 
-- 实时猫咪检测和追踪
-- 行为状态分析（行走、休息、站立等）
-- 多猫同时分析
-- 实时可视化结果
+- 猫のリアルタイム検出と追跡
+- 行動状態の分析（歩行、休息、立ち上がりなど）
+- 複数の猫の同時分析
+- リアルタイムな可視化結果
 
-## 系统要求
+## システム要件
 
 - Python 3.8+
 - Node.js 14+
-- Redis 服务器
-- CUDA (可选，用于GPU加速)
+- Redis サーバー
+- CUDA（オプション、GPU 高速化に使用）
 
-## 安装步骤
+## インストール手順
 
-1. 克隆仓库
-   ```bash
-   git clone https://github.com/ibaratorii/cattax.git
-   cd cattax
+1. リポジトリをクローン
+  
+  ```bash
+  git clone https://github.com/ibaratorii/cattax.git
+  cd cattax
+  ```
+  
+2. Python 仮想環境を作成して有効化
+  
+  Windows
+  
+  ```bash
+   python -m venv venv
+   venv\Scripts\activate
+  ```
+  
+  Linux/Mac
+  
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
+  
+3. 依存関係をインストール
+  
+  ```bash
+  pip install -r requirements.txt
+  ```
+  
+4. フロントエンドの依存関係をインストール
+  
+  ```bash
+  cd frontend
+  npm install
+  ```
+  
+5. 環境変数を設定
+  
+  ```bash
+  環境変数のサンプルファイルをコピー
+  cp .env.example .env
+  
+  必要に応じて .env ファイルを編集
+  ```
+  
+6. データベースを初期化
+  
+  ```bash
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
+  
+7. YOLO モデルファイルを配置
+  
+  YOLO モデルファイル `yolo11x-seg.pt` は別途ダウンロードする必要があります：
+  
+  1. ダウンロード先：[リンク]
+  2. ファイルをプロジェクトのルートディレクトリに配置
 
-2. 创建并激活 Python 虚拟环境
-   
-   Windows
-   ```bash
-    python -m venv venv
-    venv\Scripts\activate
-    ```
+## サービスの起動
 
-    Linux/Mac
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+4 つのターミナルを起動する必要があります：
 
-3. 安装依赖
-   ```bash
-   pip install -r requirements.txt
-   ```
+> **注意**: Celery を起動する前に、必ず Redis サーバー（ターミナル 1）を起動してください。
 
-4. 安装前端依赖
-   ```bash
-   cd frontend
-   npm install
-   ```
+### ターミナル 1: Redis サーバー
 
-5. 配置环境变量
-   ```bash
-   复制环境变量示例文件
-   cp .env.example .env
-
-   根据需要编辑 .env 文件
-   ```
-
-6. 初始化数据库
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
-   
-
-## 启动服务
-
-需要启动三个终端：
-
-### 终端 1: Redis 服务器    
 ```bash
 redis-server
 ```
 
-### 终端 2: celery worker
+### ターミナル 2: Celery worker
 
 ```bash
-激活虚拟环境后
+仮想環境を有効化した後
 celery -A cattax worker -l info
 ```
 
-### 终端 3: django服务器    
+### ターミナル 3: Django サーバー
 
 ```bash
 python manage.py runserver
 ```
 
-### 终端 4: 前端开发服务器
+### ターミナル 4: フロントエンド開発サーバー
 
 ```bash
 cd frontend
 npm run serve
 ```
-## 使用说明
 
-1. 访问 http://localhost:8080
-2. 上传猫咪视频文件
-3. 等待系统分析（分析时间取决于视频长度）
-4. 查看分析结果
-### 模型文件
+## 使用方法
 
-YOLO 模型文件 `yolo11x-seg.pt` 需要单独下载：
-1. 下载地址：[链接]
-2. 将文件放在项目根目录
+1. http://localhost:8080 にアクセス
+2. 猫の動画ファイルをアップロード
+3. システムの分析を待つ（分析時間は動画の長さによって異なります）
+4. 分析結果を確認
 
-## 项目结构
+## プロジェクト構成
 
-- cattax/
-  - api/ # Django API 应用
-  - cattax/ # 主项目目录
-    - cat_capture.py # 猫咪检测模块
-    - cat_behavior.py # 行为分析模块
-  - frontend/ # Vue.js 前端应用
-  - manage.py # Django 管理脚本
-  - requirements.txt # 依赖包列表
-  - .env.example # 环境变量示例文件
-  
-## 许可证
+```text
+cattax/
+├── api/                # Django API アプリケーション
+├── cattax/             # メインプロジェクトディレクトリ
+│   ├── cat_capture.py  # 猫検出モジュール
+│   └── cat_behavior.py # 行動分析モジュール
+├── frontend/           # Vue.js フロントエンドアプリケーション
+├── manage.py           # Django 管理スクリプト
+├── requirements.txt    # 依存パッケージリスト
+└── .env.example        # 環境変数サンプルファイル
+```
+
+## ライセンス
 
 MIT License
